@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MM STORE - متجر السراويل</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary:#2D2DE0; --primary-dark:#1a1aaa; --primary-light:#e8e8ff;
+  --accent:#E63946; --green:#16a34a;
+  --text:#1a1a2e; --text-light:#6b7280;
+  --bg:#f5f5f7; --white:#ffffff; --border:#e5e7eb;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);direction:rtl;}
+
+/* NAVBAR */
+.navbar{background:var(--white);padding:0 48px;height:68px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;box-shadow:0 2px 12px rgba(0,0,0,0.07);}
+.brand{display:flex;align-items:center;gap:10px;font-weight:900;font-size:20px;color:var(--text);cursor:pointer;}
+.brand-icon{width:38px;height:38px;background:var(--primary);border-radius:10px;display:flex;align-items:center;justify-content:center;color:white;font-size:18px;}
+.nav-links{display:flex;gap:32px;list-style:none;}
+.nav-links a{text-decoration:none;color:var(--text-light);font-size:15px;font-weight:600;cursor:pointer;transition:color 0.2s;padding-bottom:4px;border-bottom:2px solid transparent;}
+.nav-links a:hover{color:var(--primary);}
+.nav-links a.active{color:var(--primary);border-bottom-color:var(--primary);}
+.nav-right{display:flex;align-items:center;gap:14px;}
+.search-wrap{display:flex;align-items:center;background:var(--bg);border-radius:28px;padding:9px 18px;gap:8px;width:230px;border:1.5px solid transparent;transition:border-color 0.2s;}
+.search-wrap:focus-within{border-color:var(--primary);background:white;}
+.search-wrap input{border:none;background:transparent;outline:none;font-family:'Cairo',sans-serif;font-size:13px;color:var(--text);width:100%;text-align:right;}
+.search-wrap input::placeholder{color:var(--text-light);}
+.icon-btn{width:40px;height:40px;border:none;background:transparent;cursor:pointer;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:19px;transition:background 0.2s;position:relative;}
+.icon-btn:hover{background:var(--bg);}
+.cart-badge{position:absolute;top:-2px;right:-2px;background:var(--primary);color:white;font-size:9px;font-weight:800;width:17px;height:17px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid white;}
+
+/* PAGES */
+.page{display:none;}
+.page.active{display:block;animation:fadeIn 0.28s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* TOAST */
+.toast{position:fixed;bottom:28px;right:28px;z-index:9999;background:var(--text);color:white;padding:14px 22px;border-radius:14px;font-size:14px;font-weight:600;display:flex;align-items:center;gap:10px;transform:translateY(100px);opacity:0;transition:all 0.32s cubic-bezier(.34,1.56,.64,1);box-shadow:0 8px 32px rgba(0,0,0,0.2);}
+.toast.show{transform:translateY(0);opacity:1;}
+
+/* SHARED */
+.btn-primary{background:var(--primary);color:white;border:none;padding:13px 30px;border-radius:13px;font-family:'Cairo',sans-serif;font-weight:700;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:all 0.2s;box-shadow:0 4px 16px rgba(45,45,224,0.3);}
+.btn-primary:hover{background:var(--primary-dark);transform:translateY(-2px);}
+.btn-secondary{background:white;color:var(--text);border:1.5px solid var(--border);padding:13px 30px;border-radius:13px;font-family:'Cairo',sans-serif;font-weight:600;font-size:14px;cursor:pointer;transition:all 0.2s;}
+.btn-secondary:hover{border-color:var(--primary);color:var(--primary);}
+.view-all{color:var(--primary);font-size:13px;font-weight:700;cursor:pointer;text-decoration:none;}
+.view-all:hover{text-decoration:underline;}
+.section-title{font-size:22px;font-weight:800;}
+.section{padding:28px 48px;}
+.section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+
+/* PRODUCT CARD */
+.products-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
+.product-card{background:white;border-radius:18px;overflow:hidden;cursor:pointer;transition:transform 0.22s,box-shadow 0.22s;position:relative;}
+.product-card:hover{transform:translateY(-6px);box-shadow:0 16px 40px rgba(0,0,0,0.1);}
+.product-card.hidden{display:none;}
+.product-img-wrap{aspect-ratio:3/4;background:#f8f8ff;position:relative;overflow:hidden;}
+.product-img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform 0.4s;}
+.product-card:hover .product-img-wrap img{transform:scale(1.05);}
+.product-badge{position:absolute;top:12px;left:12px;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:800;color:white;z-index:1;}
+.b-sale{background:var(--accent);}
+.b-new{background:var(--primary);}
+.fav-btn{position:absolute;top:10px;right:10px;width:34px;height:34px;background:rgba(255,255,255,0.92);border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:17px;transition:transform 0.2s;z-index:1;backdrop-filter:blur(4px);}
+.fav-btn:hover{transform:scale(1.25);}
+.fav-btn.liked{color:var(--accent);}
+.product-info{padding:15px 16px;}
+.product-cat-label{font-size:11px;color:var(--text-light);margin-bottom:4px;}
+.product-name-label{font-size:15px;font-weight:700;margin-bottom:10px;}
+.product-footer-row{display:flex;align-items:center;justify-content:space-between;}
+.price-now{font-size:16px;font-weight:800;color:var(--primary);}
+.price-old{font-size:12px;color:var(--text-light);text-decoration:line-through;margin-left:4px;}
+.add-btn{width:36px;height:36px;background:var(--bg);border:none;border-radius:9px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:17px;transition:all 0.2s;}
+.add-btn:hover{background:var(--primary);}
+
+/* HOME */
+.hero{background:linear-gradient(135deg,#e8e8ff 0%,#f0f0ff 60%,#fff 100%);margin:24px 48px;border-radius:24px;padding:64px 72px;display:flex;align-items:center;justify-content:space-between;min-height:380px;overflow:hidden;position:relative;}
+.hero::before{content:'';position:absolute;top:-60px;left:-60px;width:260px;height:260px;background:radial-gradient(circle,rgba(45,45,224,0.12),transparent 70%);border-radius:50%;}
+.hero-text{max-width:460px;position:relative;z-index:1;}
+.hero-tag{display:inline-block;background:var(--primary);color:white;font-size:11px;font-weight:700;letter-spacing:1.5px;padding:4px 14px;border-radius:20px;margin-bottom:16px;}
+.hero-title{font-size:44px;font-weight:900;line-height:1.15;margin-bottom:16px;}
+.hero-title span{color:var(--primary);}
+.hero-desc{font-size:14px;color:var(--text-light);line-height:1.9;margin-bottom:30px;}
+.hero-btns{display:flex;gap:14px;align-items:center;}
+.hero-img{width:280px;height:340px;border-radius:20px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.15);flex-shrink:0;}
+.hero-img img{width:100%;height:100%;object-fit:cover;}
+.cat-pills{display:flex;gap:10px;flex-wrap:wrap;}
+.cat-pill{padding:9px 22px;border-radius:28px;border:1.5px solid var(--border);background:white;font-family:'Cairo',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;color:var(--text);}
+.cat-pill:hover,.cat-pill.active{background:var(--primary);border-color:var(--primary);color:white;}
+.features-strip{background:var(--primary);margin:0 48px 28px;border-radius:22px;padding:40px 64px;display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+.feat{display:flex;flex-direction:column;align-items:center;text-align:center;color:white;gap:12px;}
+.feat-icon{width:54px;height:54px;background:rgba(255,255,255,0.15);border-radius:15px;display:flex;align-items:center;justify-content:center;font-size:24px;}
+.feat h3{font-size:16px;font-weight:700;}
+.feat p{font-size:12px;opacity:.8;line-height:1.7;}
+footer{background:white;padding:44px 48px 20px;}
+.footer-grid{display:grid;grid-template-columns:1.6fr 1fr 1fr 1.4fr;gap:40px;margin-bottom:32px;}
+.footer-brand{display:flex;align-items:center;gap:10px;font-weight:900;font-size:18px;margin-bottom:12px;}
+.footer-desc{font-size:13px;color:var(--text-light);line-height:1.8;}
+.footer-col h4{font-size:14px;font-weight:800;margin-bottom:14px;}
+.footer-col ul{list-style:none;}
+.footer-col ul li{margin-bottom:9px;}
+.footer-col ul li a{color:var(--text-light);text-decoration:none;font-size:13px;cursor:pointer;}
+.footer-col ul li a:hover{color:var(--primary);}
+.newsletter-input{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;font-family:'Cairo',sans-serif;font-size:13px;outline:none;text-align:right;margin-bottom:8px;}
+.newsletter-input:focus{border-color:var(--primary);}
+.newsletter-btn{width:100%;background:var(--primary);color:white;border:none;border-radius:10px;padding:11px;font-family:'Cairo',sans-serif;font-weight:700;font-size:14px;cursor:pointer;}
+.newsletter-btn:hover{background:var(--primary-dark);}
+.footer-bottom{border-top:1px solid var(--border);padding-top:18px;display:flex;justify-content:space-between;align-items:center;}
+.footer-bottom p{font-size:12px;color:var(--text-light);}
+.footer-socials{display:flex;gap:10px;}
+.footer-socials span{width:32px;height:32px;background:var(--bg);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;}
+
+/* CATALOG */
+.catalog-header{padding:28px 48px 0;display:flex;align-items:center;justify-content:space-between;}
+.catalog-header h1{font-size:26px;font-weight:900;}
+.catalog-layout{display:grid;grid-template-columns:260px 1fr;gap:28px;padding:20px 48px 40px;align-items:start;}
+.filter-sidebar{background:white;border-radius:18px;padding:24px;position:sticky;top:88px;}
+.filter-sidebar h3{font-size:16px;font-weight:800;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;}
+.filter-sidebar h3 span{font-size:12px;font-weight:600;color:var(--primary);cursor:pointer;}
+.filter-group{margin-bottom:22px;border-bottom:1px solid var(--border);padding-bottom:18px;}
+.filter-group:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}
+.filter-group-title{font-size:14px;font-weight:700;margin-bottom:12px;}
+.filter-checkboxes{display:flex;flex-direction:column;gap:10px;}
+.filter-checkbox-item{display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px;}
+.filter-checkbox-item input[type=checkbox]{width:17px;height:17px;accent-color:var(--primary);cursor:pointer;}
+.price-range-row{display:flex;align-items:center;gap:10px;margin-top:8px;}
+.price-range-row input{width:80px;border:1.5px solid var(--border);border-radius:8px;padding:6px 10px;font-family:'Cairo',sans-serif;font-size:13px;outline:none;text-align:center;}
+.price-range-row input:focus{border-color:var(--primary);}
+.sort-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+.results-count{font-size:14px;color:var(--text-light);}
+.sort-select{border:1.5px solid var(--border);border-radius:10px;padding:8px 14px;font-family:'Cairo',sans-serif;font-size:13px;outline:none;background:white;cursor:pointer;color:var(--text);}
+.sort-select:focus{border-color:var(--primary);}
+.catalog-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+
+/* PRODUCT DETAIL */
+.breadcrumb{padding:16px 48px;font-size:13px;color:var(--text-light);}
+.breadcrumb span{cursor:pointer;transition:color 0.2s;}
+.breadcrumb span:hover{color:var(--primary);}
+.breadcrumb .sep{margin:0 8px;}
+.product-page-layout{padding:0 48px 40px;display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:start;}
+.gallery{display:flex;flex-direction:column;gap:12px;}
+.main-img{background:var(--bg);border-radius:20px;aspect-ratio:3/4;overflow:hidden;position:relative;}
+.main-img img{width:100%;height:100%;object-fit:cover;transition:transform 0.4s;}
+.main-img:hover img{transform:scale(1.03);}
+.thumbs{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+.thumb{aspect-ratio:1;background:var(--bg);border-radius:12px;cursor:pointer;border:2.5px solid transparent;overflow:hidden;transition:all 0.2s;}
+.thumb:hover,.thumb.active{border-color:var(--primary);}
+.thumb img{width:100%;height:100%;object-fit:cover;}
+.prod-details{padding-top:6px;}
+.prod-badge-lbl{display:inline-block;background:#fef3c7;color:#92400e;font-size:11px;font-weight:700;padding:4px 14px;border-radius:20px;margin-bottom:14px;}
+.prod-title{font-size:34px;font-weight:900;line-height:1.2;margin-bottom:14px;}
+.prod-price-row{display:flex;align-items:center;gap:14px;margin-bottom:18px;}
+.prod-price-now{font-size:30px;font-weight:800;color:var(--primary);}
+.prod-price-was{font-size:17px;color:var(--text-light);text-decoration:line-through;}
+.prod-desc{font-size:14px;color:var(--text-light);line-height:1.9;margin-bottom:22px;}
+.opt-label{font-size:14px;font-weight:700;margin-bottom:12px;}
+.color-dots{display:flex;gap:10px;margin-bottom:22px;}
+.color-dot{width:36px;height:36px;border-radius:50%;cursor:pointer;border:3px solid transparent;outline:2px solid transparent;outline-offset:3px;transition:all 0.2s;}
+.color-dot:hover,.color-dot.active{outline-color:var(--primary);}
+.size-btns{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px;}
+.size-btn{min-width:54px;padding:9px 14px;border:1.5px solid var(--border);border-radius:10px;background:white;font-family:'Cairo',sans-serif;font-size:14px;font-weight:600;cursor:pointer;text-align:center;transition:all 0.2s;}
+.size-btn:hover,.size-btn.active{background:var(--primary);border-color:var(--primary);color:white;}
+.size-guide-link{color:var(--primary);font-size:13px;text-decoration:underline;cursor:pointer;display:inline-block;margin-bottom:22px;}
+.atc-row{display:flex;gap:12px;align-items:center;margin-bottom:22px;}
+.qty-ctrl{display:flex;align-items:center;gap:12px;background:var(--bg);border-radius:12px;padding:8px 16px;}
+.qty-btn{width:30px;height:30px;border:none;background:transparent;font-size:20px;cursor:pointer;border-radius:8px;transition:background 0.2s;display:flex;align-items:center;justify-content:center;}
+.qty-btn:hover{background:white;}
+.qty-num{font-weight:800;font-size:16px;min-width:24px;text-align:center;}
+.atc-btn{flex:1;background:var(--primary);color:white;border:none;border-radius:13px;padding:15px 24px;font-family:'Cairo',sans-serif;font-weight:700;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all 0.2s;box-shadow:0 4px 16px rgba(45,45,224,0.3);}
+.atc-btn:hover{background:var(--primary-dark);transform:translateY(-2px);}
+.fav-big-btn{width:50px;height:50px;border:1.5px solid var(--border);border-radius:13px;background:white;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:22px;transition:all 0.2s;}
+.fav-big-btn:hover{border-color:var(--accent);}
+.del-badges{display:flex;gap:24px;padding-top:18px;border-top:1px solid var(--border);}
+.del-badge-item{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-light);}
+.similar-sec{padding:10px 48px 44px;}
+.similar-hdr{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:20px;}
+.similar-hdr h2{font-size:20px;font-weight:800;}
+.similar-hdr p{font-size:13px;color:var(--text-light);}
+
+/* CART */
+.cart-page-wrap{padding:28px 48px 40px;}
+.cart-top{display:flex;align-items:center;gap:16px;margin-bottom:30px;}
+.cart-top h1{font-size:26px;font-weight:900;}
+.back-link{background:none;border:none;font-family:'Cairo',sans-serif;font-size:14px;color:var(--text-light);cursor:pointer;display:flex;align-items:center;gap:6px;margin-left:auto;transition:color 0.2s;}
+.back-link:hover{color:var(--primary);}
+.cart-grid{display:grid;grid-template-columns:1fr 370px;gap:24px;align-items:start;}
+.cart-list{display:flex;flex-direction:column;gap:14px;}
+.cart-item{background:white;border-radius:18px;padding:20px 22px;display:flex;align-items:center;justify-content:space-between;gap:20px;transition:all 0.3s;}
+.ci-right{display:flex;align-items:center;gap:18px;flex:1;justify-content:flex-end;}
+.ci-img{width:82px;height:82px;border-radius:14px;background:var(--bg);overflow:hidden;flex-shrink:0;}
+.ci-img img{width:100%;height:100%;object-fit:cover;}
+.ci-info h3{font-size:16px;font-weight:700;margin-bottom:4px;}
+.ci-info p{font-size:13px;color:var(--text-light);margin-bottom:6px;}
+.ci-price{font-size:16px;font-weight:800;color:var(--primary);}
+.ci-left{display:flex;align-items:center;gap:14px;flex-shrink:0;}
+.ci-qty{display:flex;align-items:center;gap:12px;background:var(--bg);border-radius:10px;padding:6px 14px;}
+.del-btn{width:38px;height:38px;border:none;background:#fff5f5;border-radius:10px;cursor:pointer;color:#ef4444;font-size:16px;display:flex;align-items:center;justify-content:center;transition:background 0.2s;}
+.del-btn:hover{background:#fee2e2;}
+.discount-card{background:white;border-radius:18px;padding:22px;margin-top:14px;}
+.discount-card h3{font-size:15px;font-weight:700;margin-bottom:14px;}
+.discount-row{display:flex;gap:10px;}
+.discount-row input{flex:1;border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;font-family:'Cairo',sans-serif;font-size:13px;outline:none;text-align:right;}
+.discount-row input:focus{border-color:var(--primary);}
+.apply-btn{background:var(--bg);border:none;border-radius:10px;padding:10px 22px;font-family:'Cairo',sans-serif;font-weight:700;font-size:14px;cursor:pointer;color:var(--text);transition:all 0.2s;}
+.apply-btn:hover{background:var(--primary);color:white;}
+.order-summary{background:white;border-radius:18px;padding:26px;position:sticky;top:88px;}
+.order-summary h2{font-size:18px;font-weight:800;margin-bottom:20px;}
+.sum-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:13px;font-size:14px;}
+.sum-row .lbl{color:var(--text-light);}
+.sum-row .free{color:var(--green);font-weight:700;}
+.sum-divider{border:none;border-top:1px solid var(--border);margin:16px 0;}
+.sum-total{display:flex;justify-content:space-between;align-items:center;font-size:18px;font-weight:800;margin-bottom:22px;}
+.sum-total span:last-child{color:var(--primary);}
+.checkout-btn{width:100%;background:var(--primary);color:white;border:none;border-radius:13px;padding:16px;font-family:'Cairo',sans-serif;font-weight:700;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all 0.2s;box-shadow:0 4px 16px rgba(45,45,224,0.3);margin-bottom:18px;}
+.checkout-btn:hover{background:var(--primary-dark);transform:translateY(-1px);}
+.trust-list{display:flex;flex-direction:column;gap:9px;margin-bottom:18px;}
+.trust-item{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-light);justify-content:flex-end;}
+.pay-methods{display:flex;gap:8px;justify-content:center;}
+.pay-chip{padding:7px 16px;border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-weight:700;color:var(--text-light);}
+.empty-cart{text-align:center;padding:60px 24px;}
+.empty-cart .empty-icon{font-size:64px;margin-bottom:16px;}
+.empty-cart h3{font-size:18px;font-weight:700;margin-bottom:8px;}
+.empty-cart p{font-size:14px;color:var(--text-light);margin-bottom:20px;}
+
+/* CHECKOUT */
+.checkout-wrap{padding:28px 48px 48px;}
+.checkout-wrap h1{font-size:26px;font-weight:900;margin-bottom:6px;}
+.checkout-wrap .sub{font-size:13px;color:var(--text-light);margin-bottom:28px;}
+.checkout-grid{display:grid;grid-template-columns:1fr 380px;gap:28px;align-items:start;}
+.form-card{background:white;border-radius:18px;padding:28px;margin-bottom:18px;}
+.form-card h3{font-size:16px;font-weight:800;margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid var(--border);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+.form-group{display:flex;flex-direction:column;gap:7px;}
+.form-group.full{grid-column:span 2;}
+.form-group label{font-size:13px;font-weight:600;}
+.form-group input,.form-group select{border:1.5px solid var(--border);border-radius:10px;padding:11px 14px;font-family:'Cairo',sans-serif;font-size:13px;outline:none;text-align:right;background:white;color:var(--text);transition:border-color 0.2s;}
+.form-group input:focus,.form-group select:focus{border-color:var(--primary);}
+.pay-options{display:flex;flex-direction:column;gap:12px;}
+.pay-option{border:1.5px solid var(--border);border-radius:12px;padding:16px;cursor:pointer;display:flex;align-items:center;gap:12px;transition:all 0.2s;}
+.pay-option:hover,.pay-option.selected{border-color:var(--primary);background:var(--primary-light);}
+.pay-option input[type=radio]{accent-color:var(--primary);width:17px;height:17px;}
+.pay-option .pay-label{font-size:14px;font-weight:700;flex:1;}
+.card-fields{margin-top:16px;display:flex;flex-direction:column;gap:12px;}
+.place-order-btn{width:100%;background:var(--primary);color:white;border:none;border-radius:13px;padding:17px;font-family:'Cairo',sans-serif;font-weight:700;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:12px;transition:all 0.2s;box-shadow:0 4px 16px rgba(45,45,224,0.3);margin-top:20px;}
+.place-order-btn:hover{background:var(--primary-dark);transform:translateY(-2px);}
+.checkout-summary{background:white;border-radius:18px;padding:24px;position:sticky;top:88px;}
+.checkout-summary h3{font-size:16px;font-weight:800;margin-bottom:18px;}
+.co-item-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--border);}
+.co-item-row:last-of-type{border-bottom:none;}
+.co-item-right{display:flex;align-items:center;gap:12px;flex:1;justify-content:flex-end;}
+.co-item-img{width:52px;height:52px;background:var(--bg);border-radius:10px;overflow:hidden;flex-shrink:0;}
+.co-item-img img{width:100%;height:100%;object-fit:cover;}
+.co-item-name{font-size:13px;font-weight:700;}
+.co-item-sub{font-size:11px;color:var(--text-light);}
+.co-item-price{font-size:14px;font-weight:800;color:var(--primary);white-space:nowrap;}
+
+/* SUCCESS */
+.success-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:70vh;padding:48px;text-align:center;}
+.success-icon{width:100px;height:100px;background:var(--primary-light);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:48px;margin-bottom:24px;animation:popIn 0.5s cubic-bezier(.34,1.56,.64,1);}
+@keyframes popIn{from{transform:scale(0)}to{transform:scale(1)}}
+.success-wrap h1{font-size:30px;font-weight:900;margin-bottom:12px;}
+.success-wrap p{font-size:15px;color:var(--text-light);max-width:400px;line-height:1.8;margin-bottom:28px;}
+.order-num-badge{background:var(--primary-light);color:var(--primary);font-size:14px;font-weight:700;padding:8px 24px;border-radius:20px;margin-bottom:28px;display:inline-block;}
+
+/* Loading skeleton */
+.img-skeleton{width:100%;height:100%;background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="brand" onclick="showPage('home')">
+    <div class="brand-icon">👕</div>
+    MM STORE
+  </div>
+  <ul class="nav-links">
+    <li><a class="active" onclick="nav(this,'home')">الرئيسية</a></li>
+    <li><a onclick="nav(this,'catalog')">الرجال</a></li>
+    <li><a onclick="nav(this,'catalog')">النساء</a></li>
+    <li><a onclick="nav(this,'catalog')">الأطفال</a></li>
+    <li><a onclick="nav(this,'catalog')">العروض</a></li>
+  </ul>
+  <div class="nav-right">
+    <div class="search-wrap">
+      <span>🔍</span>
+      <input type="text" placeholder="ابحث عن سروال..." oninput="searchProducts(this.value)">
+    </div>
+    <button class="icon-btn">👤</button>
+    <button class="icon-btn" onclick="showPage('cart')">
+      🛒<div class="cart-badge" id="cartBadge">2</div>
+    </button>
+  </div>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<!-- ══ HOME ══ -->
+<div class="page active" id="page-home">
+  <div class="hero">
+    <div class="hero-text">
+      <div class="hero-tag">مجموعة شتاء 2024</div>
+      <h1 class="hero-title">أحدث صيحات الموضة<br><span>للسراويل العصرية</span></h1>
+      <p class="hero-desc">اكتشف تشكيلتنا الجديدة من السراويل التي تجمع بين الراحة الفائقة والأناقة التي لا تضاهى.</p>
+      <div class="hero-btns">
+        <button class="btn-primary" onclick="document.getElementById('products-sec').scrollIntoView({behavior:'smooth'})">← تسوق الآن</button>
+        <button class="btn-secondary" onclick="showPage('catalog')">مشاهدة الكتالوج</button>
+      </div>
+    </div>
+    <div class="hero-img">
+      <img src="https://images.unsplash.com/photo-1542272604-787c3835535d?w=600&q=85&fit=crop" 
+           alt="سروال جينز" onerror="this.parentElement.style.background='#e8e8ff';this.style.display='none'">
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <h2 class="section-title">تصفح حسب الفئة</h2>
+      <a class="view-all" onclick="showPage('catalog')">مشاهدة الكل ←</a>
+    </div>
+    <div class="cat-pills">
+      <button class="cat-pill active" onclick="filterHome(this,'all')">الكل</button>
+      <button class="cat-pill" onclick="filterHome(this,'جينز')">جينز</button>
+      <button class="cat-pill" onclick="filterHome(this,'تشينو')">تشينو</button>
+      <button class="cat-pill" onclick="filterHome(this,'رسمي')">رسمي</button>
+      <button class="cat-pill" onclick="filterHome(this,'رياضي')">رياضي</button>
+      <button class="cat-pill" onclick="filterHome(this,'كتان')">كتان</button>
+    </div>
+  </div>
+
+  <div class="section" id="products-sec" style="padding-top:0">
+    <div class="section-header"><h2 class="section-title">منتجاتنا المختارة</h2></div>
+    <div class="products-grid" id="home-grid">
+
+      <div class="product-card" data-cat="رياضي" data-name="سروال ركض مريح" onclick="openProduct(0)">
+        <div class="product-img-wrap">
+          <img src="https://images.unsplash.com/photo-1571945153237-4929e783af4a?w=400&q=80&fit=crop" alt="سروال ركض" onerror="this.src='https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400&q=80&fit=crop'">
+          <button class="fav-btn" onclick="event.stopPropagation();toggleFav(this)">🤍</button>
+        </div>
+        <div class="product-info">
+          <div class="product-cat-label">رياضي</div>
+          <div class="product-name-label">سروال ركض مريح</div>
+          <div class="product-footer-row">
+            <span class="price-now">120 ر.س</span>
+            <button class="add-btn" onclick="event.stopPropagation();quickAdd(0)">🛒</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="product-card" data-cat="رسمي" data-name="سروال رسمي صوف" onclick="openProduct(1)">
+        <div class="product-img-wrap">
+          <img src="https://images.unsplash.com/photo-1594938298603-c8148c4b4f03?w=400&q=80&fit=crop" alt="سروال رسمي" onerror="this.src='https://images.unsplash.com/photo-1591369822096-ffd140ec948f?w=400&q=80&fit=crop'">
+          <div class="product-badge b-sale">خصم 20%</div>
+          <button class="fav-btn" onclick="event.stopPropagation();toggleFav(this)">🤍</button>
+        </div>
+        <div class="product-info">
+          <div class="product-cat-label">رسمي</div>
+          <div class="product-name-label">سروال رسمي صوف</div>
+          <div class="product-footer-row">
+            <div><span class="price-old">312</span><span class="price-now"> 250 ر.س</span></div>
+            <button class="add-btn" onclick="event.stopPropagation();quickAdd(1)">🛒</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="product-card" data-cat="تشينو" data-name="سروال تشينو عصري" onclick="openProduct(2)">
+        <div class="product-img-wrap">
+          <img src="https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=400&q=80&fit=crop" alt="سروال تشينو" onerror="this.src='https://images.unsplash.com/photo-1552902865-b72c031ac5ea?w=400&q=80&fit=crop'">
+          <button class="fav-btn" onclick="event.stopPropagation();toggleFav(this)">🤍</button>
+        </div>
+        <div class="product-info">
+          <div class="product-cat-label">تشينو</div>
+          <div class="product-name-label">سروال تشينو عصري</div>
+          <div class="product-footer-row">
+            <span class="price-now">149 ر.س</span>
+            <button class="add-btn" onclick="event.stopPropagation();quickAdd(2)">🛒</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="product-card" data-cat="جينز" data-name="جينز كلاسيكي أزرق" onclick="openProduct(3)">
+        <div class="product-img-wrap">
+          <img src="https://images.unsplash.com/photo-1542272604-787c3835535d?w=400&q=80&fit=crop" alt="جينز" onerror="this.src='https://images.unsplash.com/photo-1475178626620-a4d074967452?w=400&q=80&fit=crop'">
+          <div class="product-badge b-new">جديد</div>
+          <button class="fav-btn" onclick="event.stopPropagation();toggleFav(this)">🤍</button>
+        </div>
+        <div class="product-info">
+          <div class="product-cat-label">جينز</div>
+          <div class="product-name-label">جينز كلاسيكي أزرق</div>
+          <div class="product-footer-row">
+            <span class="price-now">199 ر.س</span>
+            <button class="add-btn" onclick="event.stopPropagation();quickAdd(3)">🛒</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="product-card" data-cat="كتان" data-name="سروال كتان صيفي" onclick="openProduct(4)">
+        <div class="product-img-wrap">
+          <img src="https://images.unsplash.com/photo-1473966968600-fa801b869a1a?w=400&q=80&fit=crop" alt="سروال كتان" onerror="this.src='https://images.unsplash.com/photo-1555689502-c4b22d76c56f?w=400&q=80&fit=crop'">
+          <button class="fav-btn" onclick="event.stopPropagation();toggleFav(this)">🤍</button>
+        </div>
+        <div class="product-info">
+          <div class="product-cat-label">كتان</div>
+          <div class="product-name-label">سروال كتان صيفي</div>
+          <div class="product-footer-row">
+            <span class="price-now">175 ر.س</span>
+            <button class="add-btn" onclick="event.stopPropagation();quickAdd(4)">🛒</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="product-card" data-cat="جينز" data-name="جينز مريح Relaxed" onclick="openProduct(5)">
+        <div class="product-img-wrap">
+          <img src="https://images.unsplash.com/photo-1555689502-c4b22d76c56f?w=400&q=80&fit=crop" alt="جينز مريح" onerror="this.src='https://images.unsplash.com/photo-1542272604-787c3835535d?w=400&q=80'">
+          <div class="product-badge b-sale">خصم 15%</div>
+          <button class="fav-btn" onclick="event.stopPropagation();toggleFav(this)">🤍</button>
+        </div>
+        <div class="product-info">
+          <div class="product-cat-label">جينز</div>
+          <div class="product-name-label">جينز مريح Relaxed</div>
+          <div class="product-footer-row">
+            <div><span class="price-old">182</span><span class="price-now"> 155 ر.س</span></div>
+            <button class="add-btn" onclick="event.stopPropagation();quickAdd(5)">🛒</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="product-card" data-cat="رياضي" data-name="شورت رياضي قطن" onclick="openProduct(6)">
+        <div class="product-img-wrap">
+          <img src="https://images.unsplash.com/photo-1519058082700-08a0b56da9b4?w=400&q=80&fit=crop" alt="شورت رياضي" onerror="this.src='https://images.unsplash.com/photo-1571945153237-4929e783af4a?w=400&q=80'">
+          <button class="fav-btn" onclick="event.stopPropagation();toggleFav(this)">🤍</button>
+        </div>
+        <div class="product-info">
+          <div class="product-cat-label">رياضي</div>
+          <div class="product-name-label">شورت رياضي قطن</div>
+          <div class="product-footer-row">
+            <span class="price-now">89 ر.س</span>
+            <button class="add-btn" onclick="event.stopPropagation();quickAdd(6)">🛒</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="product-card" data-cat="رسمي" data-name="بنطال رسمي أنيق" onclick="openProduct(7)">
+        <div class="product-img-wrap">
+          <img src="https://images.unsplash.com/photo-1591369822096-ffd140ec948f?w=400&q=80&fit=crop" alt="بنطال رسمي" onerror="this.src='https://images.unsplash.com/photo-1594938298603-c8148c4b4f03?w=400&q=80'">
+          <div class="product-badge b-new">جديد</div>
+          <button class="fav-btn" onclick="event.stopPropagation();toggleFav(this)">🤍</button>
+        </div>
+        <div class="product-info">
+          <div class="product-cat-label">رسمي</div>
+          <div class="product-name-label">بنطال رسمي أنيق</div>
+          <div class="product-footer-row">
+            <span class="price-now">320 ر.س</span>
+            <button class="add-btn" onclick="event.stopPropagation();quickAdd(7)">🛒</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="features-strip">
+    <div class="feat"><div class="feat-icon">🛡️</div><h3>جودة مضمونة</h3><p>نختار أفضل أنواع الأقمشة لضمان استمرارية منتجاتنا وراحتك.</p></div>
+    <div class="feat"><div class="feat-icon">🚚</div><h3>توصيل سريع</h3><p>توصيل سريع وموثوق لجميع مناطق المملكة خلال 2-5 أيام.</p></div>
+    <div class="feat"><div class="feat-icon">↩️</div><h3>إرجاع سهل</h3><p>سياسة إرجاع مرنة خلال 14 يوم من تاريخ الاستلام.</p></div>
+  </div>
+
+  <footer>
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand"><div class="brand-icon" style="width:30px;height:30px;font-size:14px">👕</div> MM STORE</div>
+        <p class="footer-desc">نسعى لتقديم أفضل تجربة تسوق للسراويل في الشرق الأوسط.</p>
+      </div>
+      <div class="footer-col">
+        <h4>روابط سريعة</h4>
+        <ul>
+          <li><a onclick="showPage('catalog')">مجموعتنا الجديدة</a></li>
+          <li><a onclick="showToast('قريباً!')">الأسئلة الشائعة</a></li>
+          <li><a onclick="showToast('قريباً!')">تواصل معنا</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>الدعم</h4>
+        <ul>
+          <li><a onclick="showToast('قريباً!')">سياسة الشحن</a></li>
+          <li><a onclick="showToast('قريباً!')">سياسة الإرجاع</a></li>
+          <li><a onclick="showToast('قريباً!')">تتبع الطلب</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>نشرتنا الإخبارية</h4>
+        <p style="font-size:12px;color:var(--text-light);margin-bottom:10px">احصل على آخر العروض.</p>
+        <input type="email" class="newsletter-input" placeholder="بريدك الإلكتروني">
+        <button class="newsletter-btn" onclick="showToast('✅ تم الاشتراك!')">اشتراك</button>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2024 متجر MM. جميع الحقوق محفوظة.</p>
+      <div class="footer-socials"><span>💳</span><span>📱</span><span>📸</span></div>
+    </div>
+  </footer>
+</div>
+
+<!-- ══ CATALOG ══ -->
+<div class="page" id="page-catalog">
+  <div class="catalog-header">
+    <div>
+      <h1>الكتالوج الكامل</h1>
+      <p style="font-size:13px;color:var(--text-light);margin-top:4px">تصفح جميع منتجاتنا وصفّها حسب ذوقك</p>
+    </div>
+    <button class="btn-secondary" onclick="showPage('home')">← الرئيسية</button>
+  </div>
+  <div class="catalog-layout">
+    <div class="filter-sidebar">
+      <h3>التصفية <span onclick="resetFilters()">إعادة ضبط</span></h3>
+      <div class="filter-group">
+        <div class="filter-group-title">الفئة</div>
+        <div class="filter-checkboxes">
+          <label class="filter-checkbox-item"><input type="checkbox" class="cat-filter" value="جينز" onchange="renderCatalog()"> جينز</label>
+          <label class="filter-checkbox-item"><input type="checkbox" class="cat-filter" value="تشينو" onchange="renderCatalog()"> تشينو</label>
+          <label class="filter-checkbox-item"><input type="checkbox" class="cat-filter" value="رسمي" onchange="renderCatalog()"> رسمي</label>
+          <label class="filter-checkbox-item"><input type="checkbox" class="cat-filter" value="رياضي" onchange="renderCatalog()"> رياضي</label>
+          <label class="filter-checkbox-item"><input type="checkbox" class="cat-filter" value="كتان" onchange="renderCatalog()"> كتان</label>
+        </div>
+      </div>
+      <div class="filter-group">
+        <div class="filter-group-title">نطاق السعر (ريال)</div>
+        <div class="price-range-row">
+          <input type="number" id="minP" placeholder="من" oninput="renderCatalog()">
+          <span>—</span>
+          <input type="number" id="maxP" placeholder="إلى" oninput="renderCatalog()">
+        </div>
+      </div>
+      <div class="filter-group">
+        <div class="filter-group-title">العروض</div>
+        <div class="filter-checkboxes">
+          <label class="filter-checkbox-item"><input type="checkbox" id="saleOnly" onchange="renderCatalog()"> منتجات مخفضة فقط</label>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="sort-bar">
+        <span class="results-count" id="catCount">عرض 8 منتجات</span>
+        <select class="sort-select" id="sortSel" onchange="renderCatalog()">
+          <option value="default">الترتيب الافتراضي</option>
+          <option value="price-asc">السعر: من الأقل</option>
+          <option value="price-desc">السعر: من الأعلى</option>
+          <option value="name">الاسم أبجدياً</option>
+        </select>
+      </div>
+      <div class="catalog-grid" id="catalog-grid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PRODUCT ══ -->
+<div class="page" id="page-product">
+  <div class="breadcrumb">
+    <span onclick="showPage('home')">الرئيسية</span><span class="sep">›</span>
+    <span onclick="showPage('catalog')">الكتالوج</span><span class="sep">›</span>
+    <span id="bread-name">المنتج</span>
+  </div>
+  <div class="product-page-layout">
+    <div class="gallery">
+      <div class="main-img"><img id="mainImg" src="" alt="صورة المنتج"></div>
+      <div class="thumbs" id="thumbRow"></div>
+    </div>
+    <div class="prod-details">
+      <div class="prod-badge-lbl">⭐ الأكثر مبيعاً</div>
+      <h1 class="prod-title" id="pTitle">-</h1>
+      <div class="prod-price-row">
+        <span class="prod-price-now" id="pPrice">-</span>
+        <span class="prod-price-was" id="pOldPrice"></span>
+      </div>
+      <p class="prod-desc" id="pDesc">-</p>
+      <div class="opt-label">اختر اللون:</div>
+      <div class="color-dots">
+        <div class="color-dot active" style="background:#1a1a2e" onclick="pickColor(this)"></div>
+        <div class="color-dot" style="background:#6b7280" onclick="pickColor(this)"></div>
+        <div class="color-dot" style="background:#3b82f6" onclick="pickColor(this)"></div>
+        <div class="color-dot" style="background:#92400e" onclick="pickColor(this)"></div>
+      </div>
+      <div class="opt-label">المقاس:</div>
+      <div class="size-btns">
+        <button class="size-btn" onclick="pickSize(this)">28</button>
+        <button class="size-btn active" onclick="pickSize(this)">30</button>
+        <button class="size-btn" onclick="pickSize(this)">32</button>
+        <button class="size-btn" onclick="pickSize(this)">34</button>
+        <button class="size-btn" onclick="pickSize(this)">36</button>
+      </div>
+      <span class="size-guide-link" onclick="showToast('📏 جدول المقاسات قريباً!')">جدول القياسات</span>
+      <div class="atc-row">
+        <button class="fav-big-btn" id="favBigBtn" onclick="toggleFavBig()">🤍</button>
+        <button class="atc-btn" onclick="addFromDetail()">🛒 إضافة إلى السلة</button>
+        <div class="qty-ctrl">
+          <button class="qty-btn" onclick="dQty(-1)">−</button>
+          <span class="qty-num" id="detQty">1</span>
+          <button class="qty-btn" onclick="dQty(1)">+</button>
+        </div>
+      </div>
+      <div class="del-badges">
+        <div class="del-badge-item">🚚 توصيل سريع مجاني</div>
+        <div class="del-badge-item">↩️ إرجاع خلال 14 يوم</div>
+      </div>
+    </div>
+  </div>
+  <div class="similar-sec">
+    <div class="similar-hdr">
+      <div><h2>منتجات مشابهة</h2><p>قد يعجبك أيضاً هذه التشكيلة</p></div>
+      <a class="view-all" onclick="showPage('catalog')">← عرض الكل</a>
+    </div>
+    <div class="products-grid" id="similar-grid"></div>
+  </div>
+  <footer style="background:white;padding:18px 48px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border)">
+    <p style="font-size:12px;color:var(--text-light)">© 2024 متجر السراويل</p>
+    <div class="brand" onclick="showPage('home')" style="font-size:16px"><div class="brand-icon" style="width:28px;height:28px;font-size:14px">👕</div> MM STORE</div>
+  </footer>
+</div>
+
+<!-- ══ CART ══ -->
+<div class="page" id="page-cart">
+  <div class="cart-page-wrap">
+    <div class="cart-top">
+      <h1>🛒 سلة التسوق</h1>
+      <button class="back-link" onclick="showPage('home')">← متابعة التسوق</button>
+    </div>
+    <div class="cart-grid">
+      <div>
+        <div class="cart-list" id="cart-list"></div>
+        <div class="discount-card">
+          <h3>🏷️ هل لديك كود خصم؟</h3>
+          <div class="discount-row">
+            <input type="text" id="couponInput" placeholder="أدخل رمز الخصم هنا (جرّب: MM10)">
+            <button class="apply-btn" onclick="applyCoupon()">تطبيق</button>
+          </div>
+          <p id="couponMsg" style="font-size:12px;margin-top:8px;display:none"></p>
+        </div>
+      </div>
+      <div class="order-summary">
+        <h2>ملخص الطلب</h2>
+        <div class="sum-row"><span class="lbl" id="qtyLabel">المجموع الفرعي</span><span id="sumSub">0</span></div>
+        <div class="sum-row"><span class="lbl">رسوم الشحن</span><span class="free">مجاني</span></div>
+        <div class="sum-row" id="discRow" style="display:none"><span class="lbl">الخصم</span><span style="color:var(--accent);font-weight:700" id="discAmt"></span></div>
+        <div class="sum-row"><span class="lbl">الضريبة (15%)</span><span id="sumTax">0</span></div>
+        <hr class="sum-divider">
+        <div class="sum-total"><span>المجموع الكلي</span><span id="sumTotal">0</span></div>
+        <button class="checkout-btn" onclick="goCheckout()">💳 إتمام عملية الشراء</button>
+        <div class="trust-list">
+          <div class="trust-item"><span>🛡️</span> دفع آمن ومحمي 100%</div>
+          <div class="trust-item"><span>🚚</span> توصيل خلال 3-5 أيام</div>
+          <div class="trust-item"><span>↩️</span> إرجاع مجاني 14 يوم</div>
+        </div>
+        <div class="pay-methods">
+          <div class="pay-chip">APPLE PAY</div>
+          <div class="pay-chip">MADA</div>
+          <div class="pay-chip">VISA</div>
+        </div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:28px;font-size:14px;color:var(--text-light)">
+      هل تحتاج مساعدة؟ <span style="color:var(--primary);font-weight:700;cursor:pointer" onclick="showToast('📞 سيتواصل فريقنا معك!')">تحدث معنا</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CHECKOUT ══ -->
+<div class="page" id="page-checkout">
+  <div class="checkout-wrap">
+    <button class="back-link" style="margin-bottom:16px" onclick="showPage('cart')">← العودة للسلة</button>
+    <h1>إتمام الشراء</h1>
+    <p class="sub">أكمل بياناتك لإتمام طلبك بأمان 🔒</p>
+    <div class="checkout-grid">
+      <div>
+        <div class="form-card">
+          <h3>📦 معلومات الشحن</h3>
+          <div class="form-row">
+            <div class="form-group"><label>الاسم الأول</label><input type="text" placeholder="محمد"></div>
+            <div class="form-group"><label>الاسم الأخير</label><input type="text" placeholder="العمري"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>رقم الجوال</label><input type="tel" placeholder="05xxxxxxxx"></div>
+            <div class="form-group"><label>البريد الإلكتروني</label><input type="email" placeholder="example@email.com"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group full"><label>العنوان</label><input type="text" placeholder="الشارع، الحي، المبنى"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>المدينة</label>
+              <select><option>الرياض</option><option>جدة</option><option>مكة المكرمة</option><option>المدينة المنورة</option><option>الدمام</option><option>الخبر</option></select>
+            </div>
+            <div class="form-group"><label>الرمز البريدي</label><input type="text" placeholder="12345"></div>
+          </div>
+        </div>
+        <div class="form-card">
+          <h3>💳 طريقة الدفع</h3>
+          <div class="pay-options">
+            <div class="pay-option selected" onclick="selPay(this,true)">
+              <input type="radio" name="pay" checked>
+              <span class="pay-label">بطاقة ائتمانية / مدى</span>
+              <span style="font-size:20px">💳</span>
+            </div>
+            <div class="pay-option" onclick="selPay(this,false)">
+              <input type="radio" name="pay">
+              <span class="pay-label">Apple Pay</span>
+              <span style="font-size:20px">🍎</span>
+            </div>
+            <div class="pay-option" onclick="selPay(this,false)">
+              <input type="radio" name="pay">
+              <span class="pay-label">الدفع عند الاستلام</span>
+              <span style="font-size:20px">💵</span>
+            </div>
+          </div>
+          <div class="card-fields" id="cardFields">
+            <div class="form-group"><label>رقم البطاقة</label><input type="text" placeholder="xxxx xxxx xxxx xxxx" maxlength="19" oninput="fmtCard(this)"></div>
+            <div class="form-row">
+              <div class="form-group"><label>تاريخ الانتهاء</label><input type="text" placeholder="MM/YY" maxlength="5"></div>
+              <div class="form-group"><label>CVV</label><input type="text" placeholder="xxx" maxlength="3"></div>
+            </div>
+          </div>
+        </div>
+        <button class="place-order-btn" onclick="placeOrder()">🔒 تأكيد الطلب والدفع</button>
+      </div>
+      <div class="checkout-summary">
+        <h3>ملخص طلبك</h3>
+        <div id="coItemsList"></div>
+        <div class="sum-row"><span class="lbl">المجموع</span><span id="coSub">0</span></div>
+        <div class="sum-row"><span class="lbl">الشحن</span><span class="free">مجاني</span></div>
+        <div class="sum-row"><span class="lbl">الضريبة (15%)</span><span id="coTax">0</span></div>
+        <hr class="sum-divider">
+        <div class="sum-total"><span>الإجمالي</span><span id="coTotal">0</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SUCCESS ══ -->
+<div class="page" id="page-success">
+  <div class="success-wrap">
+    <div class="success-icon">🎉</div>
+    <h1>تم تأكيد طلبك!</h1>
+    <p>شكراً لك على شرائك من MM STORE. سيتم شحن طلبك خلال 2-5 أيام عمل وستصلك رسالة تأكيد على بريدك.</p>
+    <div class="order-num-badge" id="orderNumBadge">رقم الطلب: MM-100001</div>
+    <button class="btn-primary" style="margin:0 auto" onclick="resetStore()">← العودة للتسوق</button>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+//  PRODUCTS DATA
+// ═══════════════════════════════════════
+const P = [
+  {id:0, name:'سروال ركض مريح', price:120, cat:'رياضي',
+   imgs:['https://images.unsplash.com/photo-1571945153237-4929e783af4a?w=600&q=85&fit=crop',
+         'https://images.unsplash.com/photo-1519058082700-08a0b56da9b4?w=600&q=85&fit=crop',
+         'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=600&q=85&fit=crop'],
+   sale:false, desc:'سروال رياضي خفيف الوزن مصنوع من قماش عالي التقنية يمتص العرق ويمنحك حرية الحركة الكاملة.'},
+  {id:1, name:'سروال رسمي صوف', price:250, cat:'رسمي',
+   imgs:['https://images.unsplash.com/photo-1594938298603-c8148c4b4f03?w=600&q=85&fit=crop',
+         'https://images.unsplash.com/photo-1591369822096-ffd140ec948f?w=600&q=85&fit=crop',
+         'https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=600&q=85&fit=crop'],
+   sale:true, old:312, desc:'سروال رسمي فاخر مصنوع من الصوف الإيطالي عالي الجودة، مثالي للمناسبات الرسمية والاجتماعات.'},
+  {id:2, name:'سروال تشينو عصري', price:149, cat:'تشينو',
+   imgs:['https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=600&q=85&fit=crop',
+         'https://images.unsplash.com/photo-1552902865-b72c031ac5ea?w=600&q=85&fit=crop',
+         'https://images.unsplash.com/photo-1473966968600-fa801b869a1a?w=600&q=85&fit=crop'],
+   sale:false, desc:'سروال تشينو أنيق بقصة عصرية مناسب للخروجات اليومية والإطلالات الكاجوال الراقية.'},
+  {id:3, name:'جينز كلاسيكي أزرق', price:199, cat:'جينز',
+   imgs:['https://images.unsplash.com/photo-1542272604-787c3835535d?w=600&q=85&fit=crop',
+         'https://images.unsplash.com/photo-1475178626620-a4d074967452?w=600&q=85&fit=crop',
+         'https://images.unsplash.com/photo-1555689502-c4b22d76c56f?w=600&q=85&fit=crop'],
+   sale:false, isNew:true, desc:'جينز كلاسيكي بقصة مستقيمة مصنوع من قطن ممتاز يمنحك الراحة طوال اليوم مع أناقة لا تضاهى.'},
+  {id:4, name:'سروال كتان صيفي', price:175, cat:'كتان',
+   imgs:['https://images.unsplash.com/photo-1473966968600-fa801b869a1a?w=600&q=85&fit=crop',
+         'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=600&q=85&fit=crop',
+         'https://images.unsplash.com/photo-1552902865-b72c031ac5ea?w=600&q=85&fit=crop'],
+   sale:false, desc:'سروال كتان طبيعي 100% مثالي للطقس الحار، خفيف ومريح ويمنح تهوية ممتازة.'},
+  {id:5, name:'جينز مريح Relaxed', price:155, cat:'جينز',
+   imgs:['https://images.unsplash.com/photo-1555689502-c4b22d76c56f?w=600&q=85&fit=crop',
+         'https://images.unsplash.com/photo-1542272604-787c3835535d?w=600&q=85&fit=crop',
+         'https://images.unsplash.com/photo-1475178626620-a4d074967452?w=600&q=85&fit=crop'],
+   sale:true, old:182, desc:'جينز بقصة مريحة وفضفاضة قليلاً للذين يفضلون الراحة مع الأناقة في آنٍ واحد.'},
+  {id:6, name:'شورت رياضي قطن', price:89, cat:'رياضي',
+   imgs:['https://images.unsplash.com/photo-1519058082700-08a0b56da9b4?w=600&q=85&fit=crop',
+         'https://images.unsplash.com/photo-1571945153237-4929e783af4a?w=600&q=85&fit=crop',
+         'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=600&q=85&fit=crop'],
+   sale:false, desc:'شورت رياضي قصير مصنوع من القطن الناعم مثالي للتمارين الرياضية والأنشطة الخارجية.'},
+  {id:7, name:'بنطال رسمي أنيق', price:320, cat:'رسمي',
+   imgs:['https://images.unsplash.com/photo-1591369822096-ffd140ec948f?w=600&q=85&fit=crop',
+         'https://images.unsplash.com/photo-1594938298603-c8148c4b4f03?w=600&q=85&fit=crop',
+         'https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=600&q=85&fit=crop'],
+   sale:false, isNew:true, desc:'بنطال رسمي بتصميم أنيق وخياطة دقيقة يعكس الذوق الراقي، مناسب للمناسبات الرسمية.'},
+];
+
+// ═══════════════════════════════════════
+//  localStorage HELPERS
+// ═══════════════════════════════════════
+function lsGet(key, def) {
+  try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : def; } catch(e) { return def; }
+}
+function lsSet(key, val) {
+  try { localStorage.setItem(key, JSON.stringify(val)); } catch(e) {}
+}
+
+// ═══════════════════════════════════════
+//  STATE — كله محفوظ في localStorage
+// ═══════════════════════════════════════
+let cart     = lsGet('mm_cart',     [{pid:1,name:'سروال رسمي صوف',price:250,img:P[1].imgs[0],size:'32',qty:1},{pid:3,name:'جينز كلاسيكي أزرق',price:199,img:P[3].imgs[0],size:'30',qty:1}]);
+let coupon   = lsGet('mm_coupon',   false);
+let orderNum = lsGet('mm_orderNum', 100001);
+let curPid   = 3;
+
+function saveCart()   { lsSet('mm_cart',     cart); }
+function saveCoupon() { lsSet('mm_coupon',   coupon); }
+function saveOrder()  { lsSet('mm_orderNum', orderNum); }
+
+// ═══════════════════════════════════════
+//  FAVORITES
+// ═══════════════════════════════════════
+function isFav(id) { return lsGet('mm_favs', []).includes(id); }
+
+function toggleFavById(id, btn) {
+  const favs = lsGet('mm_favs', []);
+  const idx  = favs.indexOf(id);
+  const liked = idx === -1;
+  if (liked) favs.push(id); else favs.splice(idx, 1);
+  lsSet('mm_favs', favs);
+  if (btn) { btn.classList.toggle('liked', liked); btn.textContent = liked ? '❤️' : '🤍'; }
+  showToast(liked ? '❤️ أضيف للمفضلة!' : 'تم الحذف من المفضلة');
+  return liked;
+}
+
+// للبطاقات الثابتة في HTML (بدون pid)
+function toggleFav(btn) {
+  btn.classList.toggle('liked');
+  btn.textContent = btn.classList.contains('liked') ? '❤️' : '🤍';
+}
+
+// sync أيقونات المفضلة في الصفحة الرئيسية عند التحميل
+function syncHomeGridFavs() {
+  document.querySelectorAll('#home-grid .product-card').forEach(card => {
+    const pid = parseInt(card.dataset.pid);
+    if (isNaN(pid)) return;
+    const btn = card.querySelector('.fav-btn');
+    if (!btn) return;
+    const liked = isFav(pid);
+    btn.classList.toggle('liked', liked);
+    btn.textContent = liked ? '❤️' : '🤍';
+    // ربط onclick بالـ pid
+    btn.onclick = function(e) { e.stopPropagation(); toggleFavById(pid, btn); };
+  });
+}
+
+// ═══════════════════════════════════════
+//  NAV
+// ═══════════════════════════════════════
+function showPage(p) {
+  document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
+  document.getElementById('page-' + p).classList.add('active');
+  window.scrollTo(0, 0);
+  if (p === 'cart')     renderCart();
+  if (p === 'catalog')  renderCatalog();
+  if (p === 'checkout') renderCheckout();
+}
+function nav(el, p) {
+  document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+  el.classList.add('active');
+  showPage(p);
+}
+
+// ═══════════════════════════════════════
+//  HOME FILTER
+// ═══════════════════════════════════════
+function filterHome(btn, cat) {
+  document.querySelectorAll('.cat-pill').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('#home-grid .product-card').forEach(c => {
+    c.classList.toggle('hidden', cat !== 'all' && c.dataset.cat !== cat);
+  });
+}
+
+function searchProducts(q) {
+  const t = q.trim().toLowerCase();
+  document.querySelectorAll('#home-grid .product-card').forEach(c => {
+    c.classList.toggle('hidden', t && !c.dataset.name.toLowerCase().includes(t));
+  });
+}
+
+// ═══════════════════════════════════════
+//  CATALOG
+// ═══════════════════════════════════════
+function renderCatalog() {
+  let list = [...P];
+  const sv = document.getElementById('sortSel').value;
+  if (sv === 'price-asc')  list.sort((a,b) => a.price - b.price);
+  if (sv === 'price-desc') list.sort((a,b) => b.price - a.price);
+  if (sv === 'name')       list.sort((a,b) => a.name.localeCompare(b.name, 'ar'));
+  const cats = [...document.querySelectorAll('.cat-filter:checked')].map(x => x.value);
+  const minP = parseInt(document.getElementById('minP').value) || 0;
+  const maxP = parseInt(document.getElementById('maxP').value) || Infinity;
+  const sale = document.getElementById('saleOnly').checked;
+  list = list.filter(p => {
+    if (cats.length && !cats.includes(p.cat)) return false;
+    if (p.price < minP || p.price > maxP) return false;
+    if (sale && !p.sale) return false;
+    return true;
+  });
+  document.getElementById('catCount').textContent = `عرض ${list.length} منتجات`;
+  document.getElementById('catalog-grid').innerHTML = list.map(p => `
+    <div class="product-card" onclick="openProduct(${p.id})">
+      <div class="product-img-wrap">
+        <img src="${p.imgs[0]}" alt="${p.name}" loading="lazy">
+        ${p.sale  ? '<div class="product-badge b-sale">خصم</div>' : ''}
+        ${p.isNew ? '<div class="product-badge b-new">جديد</div>' : ''}
+        <button class="fav-btn ${isFav(p.id)?'liked':''}" onclick="event.stopPropagation();toggleFavById(${p.id},this)">${isFav(p.id)?'❤️':'🤍'}</button>
+      </div>
+      <div class="product-info">
+        <div class="product-cat-label">${p.cat}</div>
+        <div class="product-name-label">${p.name}</div>
+        <div class="product-footer-row">
+          <div>${p.old ? '<span class="price-old">'+p.old+'</span>' : ''}<span class="price-now">${p.price} ر.س</span></div>
+          <button class="add-btn" onclick="event.stopPropagation();quickAdd(${p.id})">🛒</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function resetFilters() {
+  document.querySelectorAll('.cat-filter').forEach(x => x.checked = false);
+  document.getElementById('minP').value = '';
+  document.getElementById('maxP').value = '';
+  document.getElementById('saleOnly').checked = false;
+  document.getElementById('sortSel').value = 'default';
+  renderCatalog();
+}
+
+// ═══════════════════════════════════════
+//  PRODUCT DETAIL
+// ═══════════════════════════════════════
+function openProduct(id) {
+  curPid = id;
+  const p = P[id];
+  document.getElementById('bread-name').textContent = p.name;
+  document.getElementById('pTitle').textContent = p.name;
+  document.getElementById('pPrice').textContent = p.price + '.00 ر.س';
+  document.getElementById('pOldPrice').textContent = p.old ? (p.old + '.00 ر.س') : '';
+  document.getElementById('pDesc').textContent = p.desc;
+  document.getElementById('mainImg').src = p.imgs[0];
+  document.getElementById('detQty').textContent = '1';
+  document.getElementById('favBigBtn').textContent = isFav(id) ? '❤️' : '🤍';
+  document.getElementById('thumbRow').innerHTML = p.imgs.map((img,i) =>
+    `<div class="thumb${i===0?' active':''}" onclick="setThumb(this,'${img}')"><img src="${img}" alt="" loading="lazy"></div>`
+  ).join('');
+  document.querySelectorAll('.size-btn').forEach((b,i) => b.classList.toggle('active', i===1));
+  document.querySelectorAll('.color-dot').forEach((d,i) => d.classList.toggle('active', i===0));
+  const sim = P.filter(x => x.id !== id).slice(0, 4);
+  document.getElementById('similar-grid').innerHTML = sim.map(x => `
+    <div class="product-card" onclick="openProduct(${x.id})">
+      <div class="product-img-wrap">
+        <img src="${x.imgs[0]}" alt="${x.name}" loading="lazy">
+        <button class="fav-btn ${isFav(x.id)?'liked':''}" onclick="event.stopPropagation();toggleFavById(${x.id},this)">${isFav(x.id)?'❤️':'🤍'}</button>
+      </div>
+      <div class="product-info">
+        <div class="product-cat-label">${x.cat}</div>
+        <div class="product-name-label">${x.name}</div>
+        <div class="product-footer-row">
+          <span class="price-now">${x.price} ر.س</span>
+          <button class="add-btn" onclick="event.stopPropagation();quickAdd(${x.id})">🛒</button>
+        </div>
+      </div>
+    </div>`).join('');
+  showPage('product');
+}
+
+function setThumb(el, img) {
+  document.querySelectorAll('#thumbRow .thumb').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('mainImg').src = img;
+}
+function pickColor(el) { document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active')); el.classList.add('active'); }
+function pickSize(el)  { document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active')); el.classList.add('active'); }
+function dQty(d) { const e = document.getElementById('detQty'); e.textContent = Math.max(1, parseInt(e.textContent)+d); }
+
+function toggleFavBig() {
+  const liked = toggleFavById(curPid, null);
+  document.getElementById('favBigBtn').textContent = liked ? '❤️' : '🤍';
+}
+
+function addFromDetail() {
+  const p   = P[curPid];
+  const qty = parseInt(document.getElementById('detQty').textContent);
+  const sz  = document.querySelector('.size-btn.active')?.textContent || '30';
+  const ex  = cart.find(c => c.pid === p.id && c.size === sz);
+  if (ex) ex.qty += qty;
+  else cart.push({pid:p.id, name:p.name, price:p.price, img:p.imgs[0], size:sz, qty});
+  saveCart();
+  updateBadge();
+  showToast('✅ تمت الإضافة للسلة!');
+}
+
+// ═══════════════════════════════════════
+//  CART
+// ═══════════════════════════════════════
+function quickAdd(id) {
+  const p  = P[id];
+  const ex = cart.find(c => c.pid === id);
+  if (ex) ex.qty++;
+  else cart.push({pid:id, name:p.name, price:p.price, img:p.imgs[0], size:'M', qty:1});
+  saveCart();
+  updateBadge();
+  showToast('✅ أضيف: ' + p.name);
+}
+
+function updateBadge() {
+  document.getElementById('cartBadge').textContent = cart.reduce((s,c) => s+c.qty, 0);
+}
+
+function renderCart() {
+  const el = document.getElementById('cart-list');
+  if (!cart.length) {
+    el.innerHTML = `<div class="empty-cart"><div class="empty-icon">🛒</div><h3>سلتك فارغة!</h3><p>لم تقم بإضافة أي منتجات بعد</p><button class="btn-primary" style="margin:0 auto" onclick="showPage('home')">← ابدأ التسوق</button></div>`;
+    updateSummary(); return;
+  }
+  el.innerHTML = cart.map((item,i) => `
+    <div class="cart-item" id="ci${i}">
+      <div class="ci-left">
+        <div class="ci-qty">
+          <button class="qty-btn" onclick="cQty(${i},-1)">−</button>
+          <span class="qty-num" id="cq${i}">${item.qty}</span>
+          <button class="qty-btn" onclick="cQty(${i},1)">+</button>
+        </div>
+        <button class="del-btn" onclick="removeItem(${i})">🗑️</button>
+      </div>
+      <div class="ci-right">
+        <div class="ci-info">
+          <h3>${item.name}</h3>
+          <p>المقاس: ${item.size}</p>
+          <div class="ci-price" id="cp${i}">${item.price*item.qty} ريال</div>
+        </div>
+        <div class="ci-img"><img src="${item.img}" alt="${item.name}" loading="lazy"></div>
+      </div>
+    </div>`).join('');
+  updateSummary();
+}
+
+function cQty(i, d) {
+  cart[i].qty = Math.max(1, cart[i].qty+d);
+  document.getElementById('cq'+i).textContent = cart[i].qty;
+  document.getElementById('cp'+i).textContent = cart[i].price*cart[i].qty + ' ريال';
+  saveCart(); updateBadge(); updateSummary();
+}
+
+function removeItem(i) {
+  const el = document.getElementById('ci'+i);
+  if (el) { el.style.opacity='0'; el.style.transform='translateX(30px)'; el.style.transition='all 0.3s'; }
+  setTimeout(() => { cart.splice(i,1); saveCart(); renderCart(); updateBadge(); }, 300);
+}
+
+function updateSummary() {
+  const sub   = cart.reduce((s,c) => s+c.price*c.qty, 0);
+  const tot   = cart.reduce((s,c) => s+c.qty, 0);
+  const disc  = coupon ? Math.round(sub*0.1) : 0;
+  const tax   = Math.round((sub-disc)*0.15);
+  const total = sub - disc + tax;
+  document.getElementById('sumSub').textContent   = sub   + ' ريال';
+  document.getElementById('qtyLabel').textContent = `المجموع الفرعي (${tot} قطعة)`;
+  document.getElementById('sumTax').textContent   = tax   + ' ريال';
+  document.getElementById('sumTotal').textContent = total + ' ريال';
+  const dr = document.getElementById('discRow');
+  if (coupon) { dr.style.display='flex'; document.getElementById('discAmt').textContent='− '+disc+' ريال'; }
+  else dr.style.display = 'none';
+}
+
+function applyCoupon() {
+  const code = document.getElementById('couponInput').value.trim().toUpperCase();
+  const msg  = document.getElementById('couponMsg');
+  msg.style.display = 'block';
+  if (code === 'MM10') {
+    coupon = true; saveCoupon();
+    msg.textContent = '🎉 تم تطبيق خصم 10%!'; msg.style.color = 'var(--green)';
+    updateSummary();
+  } else if (!code) {
+    msg.textContent = '⚠️ أدخل رمز الخصم'; msg.style.color = 'var(--accent)';
+  } else {
+    msg.textContent = '❌ رمز غير صحيح. جرّب: MM10'; msg.style.color = 'var(--accent)';
+  }
+}
+
+function goCheckout() {
+  if (!cart.length) { showToast('⚠️ سلتك فارغة!'); return; }
+  showPage('checkout');
+}
+
+// ═══════════════════════════════════════
+//  CHECKOUT
+// ═══════════════════════════════════════
+function renderCheckout() {
+  const sub  = cart.reduce((s,c) => s+c.price*c.qty, 0);
+  const disc = coupon ? Math.round(sub*0.1) : 0;
+  const tax  = Math.round((sub-disc)*0.15);
+  document.getElementById('coSub').textContent   = sub + ' ريال';
+  document.getElementById('coTax').textContent   = tax + ' ريال';
+  document.getElementById('coTotal').textContent = (sub-disc+tax) + ' ريال';
+  document.getElementById('coItemsList').innerHTML = cart.map(item => `
+    <div class="co-item-row">
+      <span class="co-item-price">${item.price*item.qty} ريال</span>
+      <div class="co-item-right">
+        <div><div class="co-item-name">${item.name}</div><div class="co-item-sub">الكمية: ${item.qty} | مقاس: ${item.size}</div></div>
+        <div class="co-item-img"><img src="${item.img}" alt="${item.name}" loading="lazy"></div>
+      </div>
+    </div>`).join('');
+}
+
+function selPay(el, showCard) {
+  document.querySelectorAll('.pay-option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected'); el.querySelector('input').checked = true;
+  document.getElementById('cardFields').style.display = showCard ? 'flex' : 'none';
+}
+
+function fmtCard(input) {
+  let v = input.value.replace(/\D/g,'').substring(0,16);
+  input.value = v.replace(/(.{4})/g,'$1 ').trim();
+}
+
+function placeOrder() {
+  const sub  = cart.reduce((s,c) => s+c.price*c.qty, 0);
+  const disc = coupon ? Math.round(sub*0.1) : 0;
+  const tax  = Math.round((sub-disc)*0.15);
+  // حفظ الطلب
+  const orders = lsGet('mm_orders', []);
+  orders.push({
+    id: orderNum,
+    date: new Date().toLocaleDateString('ar-SA'),
+    items: [...cart],
+    total: sub - disc + tax,
+    coupon: coupon
+  });
+  lsSet('mm_orders', orders);
+  document.getElementById('orderNumBadge').textContent = 'رقم الطلب: MM-' + orderNum;
+  orderNum++;
+  saveOrder();
+  // مسح السلة بعد الطلب
+  cart = []; coupon = false;
+  saveCart(); saveCoupon();
+  updateBadge();
+  showPage('success');
+}
+
+function resetStore() {
+  cart = []; coupon = false;
+  saveCart(); saveCoupon();
+  updateBadge(); showPage('home');
+}
+
+// ═══════════════════════════════════════
+//  TOAST
+// ═══════════════════════════════════════
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+// ═══════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════
+// إضافة data-pid للبطاقات الثابتة في HTML
+const pidMap = {'سروال ركض مريح':0,'سروال رسمي صوف':1,'سروال تشينو عصري':2,'جينز كلاسيكي أزرق':3,'سروال كتان صيفي':4,'جينز مريح Relaxed':5,'شورت رياضي قطن':6,'بنطال رسمي أنيق':7};
+document.querySelectorAll('#home-grid .product-card').forEach(card => {
+  const name = card.dataset.name;
+  if (pidMap[name] !== undefined) card.dataset.pid = pidMap[name];
+});
+updateBadge();
+syncHomeGridFavs();
+</script>
+</body>
+</html>
